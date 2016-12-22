@@ -1,6 +1,8 @@
 package com.example.bigzhg.geoquiz;
 
 //import android.provider.ContactsContract;
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 public class QuizMainActivity extends AppCompatActivity {
 
@@ -23,6 +26,10 @@ public class QuizMainActivity extends AppCompatActivity {
     /* For Saving index: mCurrentIndex
      */
     private static final String KEY_INDEX = "index";
+
+    private static final int REQUEST_CODE_CHEAT = 0;
+
+    private boolean mIsCheater;
 
     private Question[] mQuestionBank = new Question[] {
             new Question(R.string.question_oceans, true),
@@ -44,10 +51,14 @@ public class QuizMainActivity extends AppCompatActivity {
 
         int messageResId;
 
-        if (userPressedTrue == answerIsTrue) {
-            messageResId = R.string.correct_toast;
+        if (mIsCheater) {
+            messageResId = R.string.judgment_toast;
         } else {
-            messageResId = R.string.incorrect_toast;
+            if (userPressedTrue == answerIsTrue) {
+                messageResId = R.string.correct_toast;
+            } else {
+                messageResId = R.string.incorrect_toast;
+            }
         }
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
@@ -98,6 +109,7 @@ public class QuizMainActivity extends AppCompatActivity {
                 mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
                 // int question = mQuestionBank[mCurrentIndex].getTextResId();
                 // mQuestionTextView.setText(question);
+                mIsCheater = false;
                 updateQuestion();
             }
         });
@@ -111,7 +123,21 @@ public class QuizMainActivity extends AppCompatActivity {
                 }
                 // int question = mQuestionBank[mCurrentIndex].getTextResId();
                 // mQuestionTextView.setText(question);
+                mIsCheater = false;
                 updateQuestion();
+            }
+        });
+
+        Button mCheatButton = (Button)findViewById(R.id.cheat_button);
+        mCheatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start CheatActivity
+                // Intent i = new Intent(QuizMainActivity.this, CheatActivity.class);
+                boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
+                Intent i = CheatActivity.newIntent(QuizMainActivity.this, answerIsTrue);
+                //startActivity(i);
+                startActivityForResult(i, REQUEST_CODE_CHEAT);
             }
         });
 
@@ -121,6 +147,19 @@ public class QuizMainActivity extends AppCompatActivity {
         }
 
         updateQuestion();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+        if (requestCode == REQUEST_CODE_CHEAT) {
+            if (data == null) {
+                return;
+            }
+            mIsCheater = CheatActivity.wasAnswerShown(data);
+        }
     }
 
     // For Saving mCurrentIndex when the Screen is from Landscape to portrait
