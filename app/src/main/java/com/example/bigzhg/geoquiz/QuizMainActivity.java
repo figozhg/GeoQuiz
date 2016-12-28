@@ -20,24 +20,24 @@ public class QuizMainActivity extends AppCompatActivity {
     // private Button mNextButton;
     private TextView mQuestionTextView;
 
-    /* Added it for Log
-     */
+    // Added it for Log
     private static final String TAG = "QuizActivity";
-    /* For Saving index: mCurrentIndex
-     */
+    // For Saving index: mCurrentIndex
     private static final String KEY_INDEX = "index";
+    // For saving mIsCheater
+    private static final String KEY_IS_CHEATER = "isCheater";
 
     private static final int REQUEST_CODE_CHEAT = 0;
 
-    private boolean mIsCheater;
-
     private Question[] mQuestionBank = new Question[] {
-            new Question(R.string.question_oceans, true),
-            new Question(R.string.question_mideast, false),
-            new Question(R.string.question_africa, false),
-            new Question(R.string.question_americas, true),
-            new Question(R.string.question_asia, true),
+            new Question(R.string.question_oceans, true, false),
+            new Question(R.string.question_mideast, false, false),
+            new Question(R.string.question_africa, false, false),
+            new Question(R.string.question_americas, true, false),
+            new Question(R.string.question_asia, true, false),
     };
+
+    //private boolean mIsCheater = false;
 
     private int mCurrentIndex = 0;
 
@@ -51,7 +51,8 @@ public class QuizMainActivity extends AppCompatActivity {
 
         int messageResId;
 
-        if (mIsCheater) {
+        //if (mIsCheater) {
+        if (mQuestionBank[mCurrentIndex].getAnswerShown()) {
             messageResId = R.string.judgment_toast;
         } else {
             if (userPressedTrue == answerIsTrue) {
@@ -109,7 +110,7 @@ public class QuizMainActivity extends AppCompatActivity {
                 mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
                 // int question = mQuestionBank[mCurrentIndex].getTextResId();
                 // mQuestionTextView.setText(question);
-                mIsCheater = false;
+                // mIsCheater = false;
                 updateQuestion();
             }
         });
@@ -123,7 +124,7 @@ public class QuizMainActivity extends AppCompatActivity {
                 }
                 // int question = mQuestionBank[mCurrentIndex].getTextResId();
                 // mQuestionTextView.setText(question);
-                mIsCheater = false;
+                // mIsCheater = false;
                 updateQuestion();
             }
         });
@@ -141,9 +142,12 @@ public class QuizMainActivity extends AppCompatActivity {
             }
         });
 
-        // For Saving mCurrentIndex when the Screen is from Landscape to portrait
+        // For Saving mCurrentIndex & mIsCheater when the Screen is from Landscape to portrait
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            //mIsCheater = savedInstanceState.getBoolean(KEY_IS_CHEATER, false);
+            mQuestionBank[mCurrentIndex].setAnswerShown(
+                    savedInstanceState.getBoolean(KEY_IS_CHEATER, false));
         }
 
         updateQuestion();
@@ -158,16 +162,21 @@ public class QuizMainActivity extends AppCompatActivity {
             if (data == null) {
                 return;
             }
-            mIsCheater = CheatActivity.wasAnswerShown(data);
+            //mIsCheater = CheatActivity.wasAnswerShown(data);
+            mQuestionBank[mCurrentIndex].setAnswerShown(CheatActivity.wasAnswerShown(data));
         }
     }
 
-    // For Saving mCurrentIndex when the Screen is from Landscape to portrait
+    // For Saving mCurrentIndex & mIsCheater when the Screen is from Landscape to portrait
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        //savedInstanceState.putBoolean(KEY_IS_CHEATER, mIsCheater);
+        savedInstanceState.putBoolean(
+                KEY_IS_CHEATER,
+                mQuestionBank[mCurrentIndex].getAnswerShown());
     }
 
     // For TEST activity lifecycle

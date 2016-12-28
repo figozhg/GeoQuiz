@@ -2,9 +2,10 @@ package com.example.bigzhg.geoquiz;
 
 import android.content.Context;
 import android.content.Intent;
-//import android.support.v4.widget.TextViewCompat;
+import android.support.v4.widget.TextViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -15,11 +16,17 @@ public class CheatActivity extends AppCompatActivity {
             "com.example.bigzhg.geoquiz.answer_is_ture";
     private static final String EXTRA_ANSWER_SHOWN =
             "com.example.bigzhg.geoquiz.answer_shown";
+    // For saving ANSWER IS SHOWN when the Screen is from Landscape to portrait
+    private static final String KEY_ANSWER_SHOWN = "wasShown";
+
+    private boolean mAnswerShown = false;
 
     private boolean mAnswerIsTrue;
 
     private TextView mAnswerTextView;
     //private Button mShowAnswer;
+
+    private static final String TAG = "CheatActivity";
 
     public static Intent newIntent(Context pachageContext, boolean answerIsTrue) {
         Intent i = new Intent(pachageContext, CheatActivity.class);
@@ -29,6 +36,17 @@ public class CheatActivity extends AppCompatActivity {
 
     public static boolean wasAnswerShown(Intent result) {
         return result.getBooleanExtra(EXTRA_ANSWER_SHOWN, false);
+    }
+
+    private void updateShowAnswer() {
+        if (mAnswerShown) {
+            if (mAnswerIsTrue) {
+                mAnswerTextView.setText(R.string.true_button);
+            } else {
+                mAnswerTextView.setText(R.string.false_button);
+            }
+            setAnswerShownResult(true);
+        }
     }
 
     @Override
@@ -44,14 +62,33 @@ public class CheatActivity extends AppCompatActivity {
         mShowAnswer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*
                 if (mAnswerIsTrue) {
                     mAnswerTextView.setText(R.string.true_button);
                 } else {
                     mAnswerTextView.setText(R.string.false_button);
                 }
                 setAnswerShownResult(true);
+                */
+                mAnswerShown = true;
+                updateShowAnswer();
             }
         });
+
+        // For Saving mAnswerIsTrue when the Screen is from Landscape to portrait
+        if (savedInstanceState != null) {
+            mAnswerShown = savedInstanceState.getBoolean(KEY_ANSWER_SHOWN, false);
+        }
+
+        updateShowAnswer();
+    }
+
+    // For Saving mAnswerIsTrue when the Screen is from Landscape to portrait
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        Log.i(TAG, "onSave: mAnswerIsTrue");
+        savedInstanceState.putBoolean(KEY_ANSWER_SHOWN, mAnswerShown);
     }
 
     private void setAnswerShownResult(boolean isAnswerShown) {
@@ -60,4 +97,6 @@ public class CheatActivity extends AppCompatActivity {
         setResult(RESULT_OK, data);
     }
 }
+
+
 

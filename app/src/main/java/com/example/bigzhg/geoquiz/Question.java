@@ -6,6 +6,8 @@ package com.example.bigzhg.geoquiz;
 public class Question {
     private int mTextResId;
     private boolean mAnswerTrue;
+    // For issure: the Next/Prev button can be cleared the status of Cheater.
+    private boolean mAnswerShown;
 
     public int getTextResId() {
         return mTextResId;
@@ -23,8 +25,21 @@ public class Question {
         mAnswerTrue = answerTrue;
     }
 
-    public Question(int testResId, boolean answerTrue) {
+    // Changed it for fix that the next/prev button can be cleared the status of Cheater
+    public Question(int testResId, boolean answerTrue, boolean answerShown) {
         mTextResId = testResId;
         mAnswerTrue = answerTrue;
+        mAnswerShown = answerShown;
     }
+
+    /* The following method is for fix that the next/prev button can be cleared the status of Cheater
+     */
+    public boolean getAnswerShown() {
+        return mAnswerShown;
+    }
+
+    public void setAnswerShown(boolean answerShown) {
+        mAnswerShown = answerShown;
+    }
+
 }
