@@ -29,7 +29,10 @@ public class QuizMainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_CHEAT = 0;
 
-    private Question[] mQuestionBank = new Question[] {
+    // Added "Static" that is for saving the status of cheater when screen
+    // is changed orientation.
+    // But is it best mothed???
+    private static Question[] mQuestionBank = new Question[] {
             new Question(R.string.question_oceans, true, false),
             new Question(R.string.question_mideast, false, false),
             new Question(R.string.question_africa, false, false),
@@ -146,8 +149,8 @@ public class QuizMainActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
             //mIsCheater = savedInstanceState.getBoolean(KEY_IS_CHEATER, false);
-            mQuestionBank[mCurrentIndex].setAnswerShown(
-                    savedInstanceState.getBoolean(KEY_IS_CHEATER, false));
+//            mQuestionBank[mCurrentIndex].setAnswerShown(
+//                    savedInstanceState.getBoolean(KEY_IS_CHEATER, false));
         }
 
         updateQuestion();
@@ -174,9 +177,9 @@ public class QuizMainActivity extends AppCompatActivity {
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
         //savedInstanceState.putBoolean(KEY_IS_CHEATER, mIsCheater);
-        savedInstanceState.putBoolean(
-                KEY_IS_CHEATER,
-                mQuestionBank[mCurrentIndex].getAnswerShown());
+//        savedInstanceState.putBoolean(
+//                KEY_IS_CHEATER,
+//                mQuestionBank[mCurrentIndex].getAnswerShown());
     }
 
     // For TEST activity lifecycle
