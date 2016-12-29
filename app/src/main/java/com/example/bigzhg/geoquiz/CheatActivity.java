@@ -1,12 +1,15 @@
 package com.example.bigzhg.geoquiz;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.widget.TextViewCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -58,7 +61,7 @@ public class CheatActivity extends AppCompatActivity {
 
         mAnswerTextView = (TextView) findViewById(R.id.answer_text_view);
 
-        Button mShowAnswer = (Button) findViewById(R.id.show_answer_button);
+        final Button mShowAnswer = (Button) findViewById(R.id.show_answer_button);
         mShowAnswer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,6 +75,28 @@ public class CheatActivity extends AppCompatActivity {
                 */
                 mAnswerShown = true;
                 updateShowAnswer();
+
+                // For try SDK Version issue
+                // if "Build.VERSION.SDK_INT" isn't added,
+                // "ViewAnimationUtils.createCircularReveal" is prompted the error
+                // by Android Studio (Android Lint)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    int cx = mShowAnswer.getWidth() / 2;
+                    int cy = mShowAnswer.getHeight() / 2;
+                    float radius = mShowAnswer.getWidth();
+                    Animator anima = ViewAnimationUtils
+                            .createCircularReveal(mShowAnswer, cx, cy, radius, 0);
+                    anima.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            mShowAnswer.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                    anima.start();
+                } else {
+                    mShowAnswer.setVisibility(View.INVISIBLE);
+                }
             }
         });
 
