@@ -12,6 +12,10 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
+import static android.os.Build.MODEL;
+import static android.os.Build.VERSION.RELEASE;
+import static android.os.Build.VERSION.SDK_INT;
+
 
 public class CheatActivity extends AppCompatActivity {
 
@@ -28,6 +32,8 @@ public class CheatActivity extends AppCompatActivity {
 
     private TextView mAnswerTextView;
     //private Button mShowAnswer;
+
+    //private TextView mVersionTextView;
 
     private static final String TAG = "CheatActivity";
 
@@ -57,9 +63,14 @@ public class CheatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cheat);
 
-        mAnswerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE,false);
+        mAnswerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
 
         mAnswerTextView = (TextView) findViewById(R.id.answer_text_view);
+        TextView mVersionTextView = (TextView) findViewById(R.id.version_text_view);
+        mVersionTextView.setText("Product Model: " + MODEL + ", "
+                + "Android " + RELEASE + ", "
+                + "API " + String.valueOf(SDK_INT)
+               );
 
         final Button mShowAnswer = (Button) findViewById(R.id.show_answer_button);
         mShowAnswer.setOnClickListener(new View.OnClickListener() {
@@ -76,11 +87,7 @@ public class CheatActivity extends AppCompatActivity {
                 mAnswerShown = true;
                 updateShowAnswer();
 
-                // For try SDK Version issue
-                // if "Build.VERSION.SDK_INT" isn't added,
-                // "ViewAnimationUtils.createCircularReveal" is prompted the error
-                // by Android Studio (Android Lint)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     int cx = mShowAnswer.getWidth() / 2;
                     int cy = mShowAnswer.getHeight() / 2;
                     float radius = mShowAnswer.getWidth();
@@ -95,7 +102,8 @@ public class CheatActivity extends AppCompatActivity {
                     });
                     anima.start();
                 } else {
-                    mShowAnswer.setVisibility(View.INVISIBLE);
+                    //mShowAnswer.setVisibility(View.INVISIBLE);
+                    mShowAnswer.setVisibility(View.VISIBLE);
                 }
             }
         });
